@@ -136,6 +136,7 @@ const randomize = (array: any[]) => {
 };
 
 function Animals() {
+  const [isInitallyMounted, setIsInitallyMounted] = React.useState(false);
   const [cards, setCards] = React.useState<AnimalCard[]>(
     randomize(ANIMAL_CARDS)
   );
@@ -167,6 +168,14 @@ function Animals() {
   const isGameCompleted = React.useMemo(() => {
     return cards.every((card) => card.answered);
   }, [cards]);
+
+  React.useEffect(() => {
+    setIsInitallyMounted(true);
+  }, [setIsInitallyMounted]);
+
+  React.useEffect(() => {
+    console.log("isInitiallyMounted - ", isInitallyMounted);
+  });
 
   React.useEffect(() => {
     // if (isGameCompleted) {
@@ -258,6 +267,8 @@ function Animals() {
                 card={card}
                 isSelected={isSelected}
                 selectCard={selectCard}
+                imageSrc={card.imageSrc}
+                isInitallyMounted={isInitallyMounted}
               />
             );
           })}
@@ -284,25 +295,48 @@ function Animals() {
 export default Animals;
 
 type CardProps = {
+  imageSrc: string;
   card: AnimalCard;
   index: number;
   isSelected: boolean;
   selectCard: (cardId: number) => void;
+  isInitallyMounted: boolean;
 };
 
 const defaultUrl = "/assets/default.jpg";
 
-const imageAnimateProps = {
-  rotateY: 0,
-  transition: { duration: 3 },
-};
-
 function CardComponent(props: CardProps) {
+  const [imageurl, setImageurl] = React.useState(defaultUrl);
   const [revealed, setRevealed] = React.useState(false);
 
-  const clickHandler = () => setRevealed((prevRevealed) => !prevRevealed);
+  const clickHandler = () => {
+    setRevealed((prevRevealed) => !prevRevealed);
+  };
 
-  const { selectCard, isSelected, card, index } = props;
+  const { selectCard, isSelected, card, index, imageSrc, isInitallyMounted } =
+    props;
+
+  const imageAnimateProps = {
+    rotateY: 0,
+    transition: { duration: 3 },
+  };
+
+  const reverseInitial = () => {
+    if (!isInitallyMounted && !revealed) {
+      return {
+        rotateY: 0,
+      };
+    }
+  };
+  const reverseAnimation = () => {
+    if (!isInitallyMounted && !revealed) {
+      return {
+        rotateY: -180,
+        transition: { duration: 3 },
+      };
+    }
+  };
+
   return (
     <motion.button
       onClick={() => {
@@ -319,20 +353,30 @@ function CardComponent(props: CardProps) {
       <motion.div
         className="card_content"
         style={{ maxWidth: "100px" }}
-        initial={{ rotateY: 180 }}
-        animate={revealed ? imageAnimateProps : undefined}
-        exit={{ rotateY: 170, transition: { duration: 3 } }}
+        initial={{}}
+        animate={revealed ? imageAnimateProps : reverseAnimation()}
+        // exit={
+        //   revealed ? { rotateY: 170, transition: { duration: 3 } } : reverseExit
+        // }
+        // onAnimationStart={() => {
+        //   if (imageurl === defaultUrl && revealed) {
+        //     setImageurl(imageSrc);
+        //   }
+        //   console.log("Animation  Started");
+        //   console.log(revealed);
+        // }}
+        onAnimationComplete={() => {
+          revealed ? setImageurl(imageSrc) : setImageurl(defaultUrl);
+        }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <motion.img
-          src={revealed ? card.imageSrc : defaultUrl}
+          src={imageurl}
           alt=""
           style={{
             objectFit: "cover",
             width: "100%",
           }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 10 }}
           //should add the opacity
         />
         <p>Answered: {card.answered.toString()}</p>
