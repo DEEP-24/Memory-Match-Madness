@@ -4,7 +4,7 @@ import Link from "next/link";
 import * as React from "react";
 import { ArrowLeftIcon, ArrowPathIcon } from "@heroicons/react/20/solid";
 import classNames from "classnames";
-import { motion } from "framer-motion";
+import { motion, useCycle } from "framer-motion";
 
 type AnimalCard = {
   id: number;
@@ -308,6 +308,8 @@ const defaultUrl = "/assets/default.jpg";
 function CardComponent(props: CardProps) {
   const [imageurl, setImageurl] = React.useState(defaultUrl);
   const [revealed, setRevealed] = React.useState(false);
+  const [isFlipped, setIsFlipped] = React.useState(false);
+  const [flipDirection, setFlipDirection] = useCycle(1, -1);
 
   const clickHandler = () => {
     setRevealed((prevRevealed) => !prevRevealed);
@@ -321,20 +323,25 @@ function CardComponent(props: CardProps) {
     transition: { duration: 3 },
   };
 
-  const reverseInitial = () => {
-    if (!isInitallyMounted && !revealed) {
-      return {
-        rotateY: 0,
-      };
-    }
-  };
-  const reverseAnimation = () => {
-    if (!isInitallyMounted && !revealed) {
-      return {
-        rotateY: -180,
-        transition: { duration: 3 },
-      };
-    }
+  // const reverseInitial = () => {
+  //   if (!isInitallyMounted && !revealed) {
+  //     return {
+  //       rotateY: 0,
+  //     };
+  //   }
+  // };
+  // const reverseAnimation = () => {
+  //   if (!isInitallyMounted && !revealed) {
+  //     return {
+  //       rotateY: -180,
+  //       transition: { duration: 3 },
+  //     };
+  //   }
+  // };
+
+  const handleCardClick = () => {
+    setIsFlipped(!isFlipped);
+    setFlipDirection(flipDirection * -1);
   };
 
   return (
@@ -352,9 +359,16 @@ function CardComponent(props: CardProps) {
     >
       <motion.div
         className="card_content"
+        onClick={handleCardClick}
         style={{ maxWidth: "100px" }}
-        initial={{}}
-        animate={revealed ? imageAnimateProps : reverseAnimation()}
+        // initial={{}}
+        onAnimationStart={() => {
+          console.log("Animation Started");
+          console.log(isFlipped);
+          console.log(flipDirection);
+        }}
+        animate={{ rotateY: isFlipped ? 180 * flipDirection : 0 }}
+        transition={{ duration: 0.5 }}
         // exit={
         //   revealed ? { rotateY: 170, transition: { duration: 3 } } : reverseExit
         // }
@@ -366,7 +380,11 @@ function CardComponent(props: CardProps) {
         //   console.log(revealed);
         // }}
         onAnimationComplete={() => {
-          revealed ? setImageurl(imageSrc) : setImageurl(defaultUrl);
+          console.log("Animation Started");
+          console.log(isFlipped);
+          console.log(flipDirection);
+
+          isFlipped ? setImageurl(imageSrc) : setImageurl(defaultUrl);
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
