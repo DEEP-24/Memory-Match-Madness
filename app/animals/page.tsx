@@ -307,13 +307,8 @@ const defaultUrl = "/assets/default.jpg";
 
 function CardComponent(props: CardProps) {
   const [imageurl, setImageurl] = React.useState(defaultUrl);
-  const [revealed, setRevealed] = React.useState(false);
   const [isFlipped, setIsFlipped] = React.useState(false);
-  const [flipDirection, setFlipDirection] = useCycle(1, -1);
-
-  const clickHandler = () => {
-    setRevealed((prevRevealed) => !prevRevealed);
-  };
+  const [flipDirection, setFlipDirection] = React.useState(1);
 
   const { selectCard, isSelected, card, index, imageSrc, isInitallyMounted } =
     props;
@@ -340,15 +335,15 @@ function CardComponent(props: CardProps) {
   // };
 
   const handleCardClick = () => {
-    setIsFlipped(!isFlipped);
-    setFlipDirection(flipDirection * -1);
+    setIsFlipped((prevIsFlipped) => !prevIsFlipped);
+    setFlipDirection((prevFlipDirection) => prevFlipDirection * -1);
   };
 
   return (
     <motion.button
       onClick={() => {
         selectCard(card.id);
-        clickHandler();
+        handleCardClick();
       }}
       className={classNames(`card`, isSelected ? "" : "")}
       key={card.id}
@@ -367,20 +362,16 @@ function CardComponent(props: CardProps) {
           console.log(isFlipped);
           console.log(flipDirection);
         }}
-        animate={{ rotateY: isFlipped ? 180 * flipDirection : 0 }}
+        animate={{
+          rotateY: isInitallyMounted
+            ? isFlipped
+              ? 180 * flipDirection
+              : 0
+            : 0,
+        }}
         transition={{ duration: 0.5 }}
-        // exit={
-        //   revealed ? { rotateY: 170, transition: { duration: 3 } } : reverseExit
-        // }
-        // onAnimationStart={() => {
-        //   if (imageurl === defaultUrl && revealed) {
-        //     setImageurl(imageSrc);
-        //   }
-        //   console.log("Animation  Started");
-        //   console.log(revealed);
-        // }}
         onAnimationComplete={() => {
-          console.log("Animation Started");
+          console.log("Animation Completed");
           console.log(isFlipped);
           console.log(flipDirection);
 
@@ -399,7 +390,7 @@ function CardComponent(props: CardProps) {
         />
         <p>Answered: {card.answered.toString()}</p>
         <p>Selected: {card.selected.toString()}</p>
-        <p>Revealed: {revealed.toString()}</p>
+        <p>Revealed: {isFlipped.toString()}</p>
       </motion.div>
     </motion.button>
   );
