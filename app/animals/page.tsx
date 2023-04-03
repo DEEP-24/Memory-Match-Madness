@@ -4,13 +4,13 @@ import Link from 'next/link';
 import * as React from 'react';
 import { ArrowLeftIcon, ArrowPathIcon } from '@heroicons/react/20/solid';
 import classNames from 'classnames';
-import { motion, useCycle } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 
 type AnimalCard = {
   id: number;
   type: string;
-  imageSrc: string;
-  // show: boolean;
+  frontImage: string;
+  backImage: string;
   selected: boolean;
   answered: boolean;
 };
@@ -19,112 +19,129 @@ const ANIMAL_CARDS: AnimalCard[] = [
   {
     id: 1,
     type: 'elephant',
-    imageSrc: '/assets/elephant.jpg',
+    frontImage: '/assets/default.jpg',
+    backImage: '/assets/elephant.jpg',
     answered: false,
     selected: false,
   },
   {
     id: 2,
     type: 'elephant',
-    imageSrc: '/assets/elephant.jpg',
+    frontImage: '/assets/default.jpg',
+    backImage: '/assets/elephant.jpg',
     answered: false,
     selected: false,
   },
   {
     id: 3,
     type: 'lion',
-    imageSrc: '/assets/lion.avif',
+    frontImage: '/assets/default.jpg',
+    backImage: '/assets/lion.avif',
+
     answered: false,
     selected: false,
   },
   {
     id: 4,
     type: 'lion',
-    imageSrc: '/assets/lion.avif',
+    frontImage: '/assets/default.jpg',
+    backImage: '/assets/lion.avif',
     answered: false,
     selected: false,
   },
   {
     id: 5,
     type: 'tiger',
-    imageSrc: '/assets/tiger.jpg',
+    frontImage: '/assets/default.jpg',
+    backImage: '/assets/tiger.jpg',
     answered: false,
     selected: false,
   },
   {
     id: 6,
     type: 'tiger',
-    imageSrc: '/assets/tiger.jpg',
+    frontImage: '/assets/default.jpg',
+    backImage: '/assets/tiger.jpg',
     answered: false,
     selected: false,
   },
   {
     id: 7,
     type: 'monkey',
-    imageSrc: '/assets/monkey.jpg',
+    frontImage: '/assets/default.jpg',
+    backImage: '/assets/monkey.jpg',
     answered: false,
     selected: false,
   },
   {
     id: 8,
     type: 'monkey',
-    imageSrc: '/assets/monkey.jpg',
+    frontImage: '/assets/default.jpg',
+    backImage: '/assets/monkey.jpg',
     answered: false,
     selected: false,
   },
   {
     id: 9,
     type: 'giraffe',
-    imageSrc: '/assets/giraffe.avif',
+    frontImage: '/assets/default.jpg',
+    backImage: '/assets/giraffe.avif',
     answered: false,
     selected: false,
   },
   {
     id: 10,
     type: 'giraffe',
-    imageSrc: '/assets/giraffe.avif',
+    frontImage: '/assets/default.jpg',
+    backImage: '/assets/giraffe.avif',
     answered: false,
     selected: false,
   },
   {
     id: 11,
     type: 'dog',
-    imageSrc: '/assets/dog.jpg',
+    frontImage: '/assets/default.jpg',
+    backImage: '/assets/dog.jpg',
     answered: false,
     selected: false,
   },
   {
     id: 12,
     type: 'dog',
-    imageSrc: '/assets/dog.jpg',
+    frontImage: '/assets/default.jpg',
+    backImage: '/assets/dog.jpg',
     answered: false,
     selected: false,
   },
   {
     id: 13,
     type: 'cat',
-    imageSrc: '/assets/cat.png',
+    frontImage: '/assets/default.jpg',
+    backImage: '/assets/cat.png',
     answered: false,
     selected: false,
   },
   {
     id: 14,
     type: 'cat',
-    imageSrc: '/assets/cat.png',
+    frontImage: '/assets/default.jpg',
+    backImage: '/assets/cat.png',
     answered: false,
     selected: false,
   },
   {
     id: 15,
     type: 'deer',
-    imageSrc: '/assets/deer.webp',
+    frontImage: '/assets/default.jpg',
+    backImage: '/assets/deer.webp',
     answered: false,
     selected: false,
   },
   {
     id: 16,
     type: 'deer',
-    imageSrc: '/assets/deer.webp',
+    frontImage: '/assets/default.jpg',
+    backImage: '/assets/deer.webp',
     answered: false,
     selected: false,
   },
@@ -260,7 +277,8 @@ function Animals() {
                 card={card}
                 isSelected={isSelected}
                 selectCard={selectCard}
-                imageSrc={card.imageSrc}
+                frontImage={card.frontImage}
+                backImage={card.backImage}
                 isInitallyMounted={isInitallyMounted}
               />
             );
@@ -288,7 +306,8 @@ function Animals() {
 export default Animals;
 
 type CardProps = {
-  imageSrc: string;
+  frontImage: string;
+  backImage: string;
   card: AnimalCard;
   index: number;
   isSelected: boolean;
@@ -296,55 +315,87 @@ type CardProps = {
   isInitallyMounted: boolean;
 };
 
-const defaultUrl = '/assets/default.jpg';
-
 function CardComponent(props: CardProps) {
-  const [imageurl, setImageurl] = React.useState(defaultUrl);
   const [isFlipped, setIsFlipped] = React.useState(false);
-  const [flipDirection, setFlipDirection] = React.useState(1);
 
-  const { selectCard, isSelected, card, index, imageSrc, isInitallyMounted } = props;
+  const { selectCard, isSelected, card, index, frontImage, backImage, isInitallyMounted } = props;
 
-  const imageAnimateProps = {
-    rotateY: 0,
-    transition: { duration: 3 },
+  const flipCard = () => {
+    setIsFlipped((prevState) => !prevState);
   };
 
-  // const reverseInitial = () => {
-  //   if (!isInitallyMounted && !revealed) {
-  //     return {
-  //       rotateY: 0,
-  //     };
-  //   }
-  // };
-  // const reverseAnimation = () => {
-  //   if (!isInitallyMounted && !revealed) {
-  //     return {
-  //       rotateY: -180,
-  //       transition: { duration: 3 },
-  //     };
-  //   }
-  // };
-
-  const handleCardClick = () => {
-    setIsFlipped((prevIsFlipped) => !prevIsFlipped);
-    setFlipDirection((prevFlipDirection) => prevFlipDirection * -1);
+  const transition = {
+    duration: 2,
+    ease: 'easeInOut',
   };
 
   return (
     <motion.button
-      onClick={() => {
-        selectCard(card.id);
-        handleCardClick();
-      }}
+      onClick={flipCard}
       className={classNames(`card`, isSelected ? '' : '')}
       key={card.id}
+      style={{
+        perspective: '1000px',
+        height: '145px',
+        width: '170px',
+        position: 'relative',
+        borderRadius: '10px',
+      }}
       //for stagerring effect
       initial={{ opacity: 0, translateY: 30 }}
       animate={{ opacity: 1, translateY: 0 }}
       transition={{ duration: 0.3, delay: index * 0.2, type: 'tween' }}
     >
-      <motion.div
+      <AnimatePresence initial={false} custom={isFlipped}>
+        <motion.img
+          key="front"
+          src={frontImage}
+          alt="Front"
+          custom={isFlipped}
+          initial={false}
+          variants={{
+            visible: { rotateY: 0, opacity: 1 },
+            hidden: { rotateY: -180, opacity: 0 },
+          }}
+          animate={isFlipped ? 'hidden' : 'visible'}
+          exit={{ rotateY: 180, opacity: 0 }}
+          style={{
+            aspectRatio: '1/1',
+            objectFit: 'cover',
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            borderRadius: '10px',
+            backfaceVisibility: 'hidden',
+            border: '4px solid red',
+          }}
+          transition={transition}
+        />
+        <motion.img
+          key="back"
+          src={backImage}
+          alt="Back"
+          custom={isFlipped}
+          initial={false}
+          variants={{
+            visible: { rotateY: 0, opacity: 1 },
+            hidden: { rotateY: 180, opacity: 0 },
+          }}
+          animate={isFlipped ? 'visible' : 'hidden'}
+          exit={{ rotateY: -180, opacity: 0 }}
+          style={{
+            aspectRatio: '1/1',
+            objectFit: 'cover',
+            width: '100%',
+            height: '100%',
+            borderRadius: '10px',
+            backfaceVisibility: 'hidden',
+            border: '4px solid red',
+          }}
+          transition={transition}
+        />
+      </AnimatePresence>
+      {/* <motion.div
         className="card_content"
         onClick={handleCardClick}
         style={{ maxWidth: '100px' }}
@@ -365,9 +416,9 @@ function CardComponent(props: CardProps) {
 
           isFlipped ? setImageurl(imageSrc) : setImageurl(defaultUrl);
         }}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <motion.img
+      > */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {/* <motion.img
           src={imageurl}
           alt=""
           style={{
@@ -379,7 +430,7 @@ function CardComponent(props: CardProps) {
         <p>Answered: {card.answered.toString()}</p>
         <p>Selected: {card.selected.toString()}</p>
         <p>Revealed: {isFlipped.toString()}</p>
-      </motion.div>
+      </motion.div> */}
     </motion.button>
   );
 }

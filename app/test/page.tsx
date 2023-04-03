@@ -16,7 +16,7 @@ const Card: React.FC<CardProps> = ({ frontImage, backImage }) => {
   };
 
   const transition = {
-    duration: 5,
+    duration: 2,
     ease: 'easeInOut',
   };
 
