@@ -153,7 +153,7 @@ const randomize = (array: any[]) => {
 };
 
 function Animals() {
-  const [isInitallyMounted, setIsInitallyMounted] = React.useState(false);
+  const [isInitiallyMounted, setIsInitiallyMounted] = React.useState(false);
   const [cards, setCards] = React.useState<AnimalCard[]>(randomize(ANIMAL_CARDS));
   const [turns, setTurns] = React.useState(0);
   const [matches, setMatches] = React.useState(0);
@@ -181,11 +181,11 @@ function Animals() {
   }, [cards]);
 
   React.useEffect(() => {
-    setIsInitallyMounted(true);
-  }, [setIsInitallyMounted]);
+    setIsInitiallyMounted(true);
+  }, [setIsInitiallyMounted]);
 
   React.useEffect(() => {
-    console.log('isInitiallyMounted - ', isInitallyMounted);
+    console.log('isInitiallyMounted - ', isInitiallyMounted);
   });
 
   React.useEffect(() => {
@@ -279,7 +279,7 @@ function Animals() {
                 selectCard={selectCard}
                 frontImage={card.frontImage}
                 backImage={card.backImage}
-                isInitallyMounted={isInitallyMounted}
+                isInitiallyMounted={isInitiallyMounted}
               />
             );
           })}
@@ -312,13 +312,13 @@ type CardProps = {
   index: number;
   isSelected: boolean;
   selectCard: (cardId: number) => void;
-  isInitallyMounted: boolean;
+  isInitiallyMounted: boolean;
 };
 
 function CardComponent(props: CardProps) {
   const [isFlipped, setIsFlipped] = React.useState(false);
 
-  const { selectCard, isSelected, card, index, frontImage, backImage, isInitallyMounted } = props;
+  const { selectCard, isSelected, card, index, frontImage, backImage, isInitiallyMounted } = props;
 
   const flipCard = () => {
     setIsFlipped((prevState) => !prevState);
@@ -328,6 +328,17 @@ function CardComponent(props: CardProps) {
     duration: 2,
     ease: 'easeInOut',
   };
+
+  React.useEffect(() => {
+    if (isInitiallyMounted) {
+      setTimeout(() => {
+        setIsFlipped(true);
+        setTimeout(() => {
+          setIsFlipped(false);
+        }, 2000);
+      }, 4500);
+    }
+  }, [isInitiallyMounted]);
 
   return (
     <motion.button
@@ -395,42 +406,6 @@ function CardComponent(props: CardProps) {
           transition={transition}
         />
       </AnimatePresence>
-      {/* <motion.div
-        className="card_content"
-        onClick={handleCardClick}
-        style={{ maxWidth: '100px' }}
-        // initial={{}}
-        onAnimationStart={() => {
-          console.log('Animation Started');
-          console.log(isFlipped);
-          console.log(flipDirection);
-        }}
-        animate={{
-          rotateY: isInitallyMounted ? (isFlipped ? 180 * flipDirection : 0) : 0,
-        }}
-        transition={{ duration: 0.5 }}
-        onAnimationComplete={() => {
-          console.log('Animation Completed');
-          console.log(isFlipped);
-          console.log(flipDirection);
-
-          isFlipped ? setImageurl(imageSrc) : setImageurl(defaultUrl);
-        }}
-      > */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      {/* <motion.img
-          src={imageurl}
-          alt=""
-          style={{
-            objectFit: 'cover',
-            width: '100%',
-          }}
-          //should add the opacity
-        />
-        <p>Answered: {card.answered.toString()}</p>
-        <p>Selected: {card.selected.toString()}</p>
-        <p>Revealed: {isFlipped.toString()}</p>
-      </motion.div> */}
     </motion.button>
   );
 }
