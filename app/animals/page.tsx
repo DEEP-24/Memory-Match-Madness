@@ -148,8 +148,10 @@ const ANIMAL_CARDS: AnimalCard[] = [
 ];
 
 const randomize = (array: any[]) => {
+  const copy = [...array];
+
   // @ts-expect-error - Fix it later
-  return array.sort(() => Math.random() > 0.5);
+  return copy.sort(() => Math.random() > 0.5);
 };
 
 function Animals() {
@@ -164,10 +166,16 @@ function Animals() {
     setTurns(0);
     setMatches(0);
 
-    randomize(ANIMAL_CARDS);
+    setCards(randomize(cards.map((card) => ({ ...card, answered: false, selected: false }))));
   };
 
   const selectCard = (cardId: number) => {
+    const selectedCard = cards.find((card) => card.id === cardId);
+
+    if (!selectedCard || selectedCard.answered) {
+      //do nothing if the card has already been answered
+      return;
+    }
     if (selectedCardOneId === null) {
       setSelectedCardOneId(cardId);
       return;
@@ -183,10 +191,6 @@ function Animals() {
   React.useEffect(() => {
     setIsInitiallyMounted(true);
   }, [setIsInitiallyMounted]);
-
-  React.useEffect(() => {
-    console.log('isInitiallyMounted - ', isInitiallyMounted);
-  });
 
   React.useEffect(() => {
     // if (isGameCompleted) {
@@ -321,6 +325,10 @@ function CardComponent(props: CardProps) {
   const { selectCard, isSelected, card, index, frontImage, backImage, isInitiallyMounted } = props;
 
   const flipCard = () => {
+    if (card.answered) {
+      //Do not flip the card if it has already been matched
+      return;
+    }
     setIsFlipped((prevState) => !prevState);
   };
 
@@ -336,15 +344,18 @@ function CardComponent(props: CardProps) {
         setTimeout(() => {
           setIsFlipped(false);
         }, 2000);
-      }, 4500);
+      }, 3700);
     }
   }, [isInitiallyMounted]);
 
   return (
     <motion.button
-      onClick={flipCard}
-      className={classNames(`card`, isSelected ? '' : '')}
-      key={card.id}
+      onClick={() => {
+        flipCard();
+        selectCard(index);
+      }}
+      className={classNames(`card`, isSelected ? `style={{backgroundColor: "red"}}` : '')}
+      key={index}
       style={{
         perspective: '1000px',
         height: '145px',
@@ -406,6 +417,7 @@ function CardComponent(props: CardProps) {
           transition={transition}
         />
       </AnimatePresence>
+      <span>Selected : {isSelected.toString()}</span>
     </motion.button>
   );
 }
