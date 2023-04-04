@@ -7,20 +7,11 @@ import classNames from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
 import * as React from 'react';
-import { ANIMAL_CARDS, ICard } from '~/src/data/animals';
-import { randomizeCards } from '~/src/utils/functions';
 import { useCardContext } from '~/src/context/CardContext';
-import { log } from 'console';
+import { ICard } from '~/src/data/animals';
 
 function Animals() {
-  const { cards, setTurns, setMatches, matches, turns } = useCardContext();
-
-  const restart = () => {
-    setTurns(0);
-    setMatches(0);
-
-    randomizeCards(ANIMAL_CARDS);
-  };
+  const { cards, matches, turns, restart } = useCardContext();
 
   return (
     <div
@@ -53,15 +44,9 @@ function Animals() {
             padding: '10px',
           }}
         >
-          {cards.map((card) => {
-            console.log({
-              id: card.id,
-              renderId: card.renderId,
-              type: card.type,
-            });
-
-            return <CardComponent key={card.renderId} card={card} />;
-          })}
+          {cards.map((card) => (
+            <CardComponent key={card.renderId} card={card} />
+          ))}
         </div>
       </div>
       <div className="Menu_Restart">
@@ -112,25 +97,18 @@ function CardComponent({ card }: CardProps) {
   }, [isReverseAnimationFinished]);
 
   React.useEffect(() => {
-    if (!isReverseAnimationFinished) {
-      return;
-    }
+    if (!isReverseAnimationFinished) return;
 
-    console.log('Rendering inside ~ line 119 of ~/src/app/animals/page.tsx');
+    console.log('Rendering inside ~ line 112 of ~/src/app/animals/page.tsx');
 
     if (card.answered) {
       setIsCardShowing(true);
       setPreventPointerEvent(true);
+    } else {
+      setIsCardShowing(false);
+      setPreventPointerEvent(false);
     }
-
-    /**
-     * This is the code that is causing the issue
-     */
-    // else {
-    //   setIsCardShowing(false);
-    //   setPreventPointerEvent(false);
-    // }
-  }, [card.answered, isReverseAnimationFinished]);
+  }, [card, isReverseAnimationFinished]);
 
   React.useEffect(() => {
     if (!isInitiallyMounted) {
@@ -154,12 +132,6 @@ function CardComponent({ card }: CardProps) {
   return (
     <motion.button
       onClick={() => {
-        // console.log({
-        //   id: card.id,
-        //   renderId: card.renderId,
-        //   type: card.type,
-        // });
-
         setIsCardShowing((prevState) => {
           if (isReverseAnimationFinished && prevState) {
             handleCardSelect(card.id);
@@ -173,7 +145,7 @@ function CardComponent({ card }: CardProps) {
           handleCardSelect(card.id);
         }
       }}
-      className={classNames(`card`, isCardShowing ? '' : '')}
+      className={classNames('card')}
       key={card.id}
       style={{
         perspective: '1000px',
@@ -210,6 +182,7 @@ function CardComponent({ card }: CardProps) {
             borderRadius: '10px',
             backfaceVisibility: 'hidden',
             border: '4px solid red',
+            userSelect: 'none',
           }}
           transition={transition}
           onAnimationComplete={(state) => {
@@ -242,6 +215,7 @@ function CardComponent({ card }: CardProps) {
             borderRadius: '10px',
             backfaceVisibility: 'hidden',
             border: '4px solid red',
+            userSelect: 'none',
           }}
           transition={transition}
         />

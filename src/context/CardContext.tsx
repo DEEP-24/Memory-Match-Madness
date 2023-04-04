@@ -7,16 +7,13 @@ import { ANIMAL_CARDS, ICard } from '~/src/data/animals';
 const cardContext = React.createContext<
   | {
       cards: ICard[];
-      setCards: React.Dispatch<React.SetStateAction<ICard[]>>;
       turns: number;
-      setTurns: React.Dispatch<React.SetStateAction<number>>;
       matches: number;
-      setMatches: React.Dispatch<React.SetStateAction<number>>;
       selectedCardOneId: number | null;
       selectedCardTwoId: number | null;
       handleCardSelect: (cardId: number) => void;
       isInitiallyMounted: boolean;
-      setIsInitiallyMounted: React.Dispatch<React.SetStateAction<boolean>>;
+      restart: () => void;
     }
   | undefined
 >(undefined);
@@ -40,6 +37,13 @@ function CardProvider(props: { children: React.ReactNode }) {
     },
     [selectedCardOneId],
   );
+
+  const restart = () => {
+    setTurns(0);
+    setMatches(0);
+
+    randomizeCards(ANIMAL_CARDS);
+  };
 
   React.useEffect(() => {
     setCards(randomizeCards(ANIMAL_CARDS));
@@ -78,6 +82,14 @@ function CardProvider(props: { children: React.ReactNode }) {
       setSelectedCardOneId(null);
       setSelectedCardTwoId(null);
       setTurns((prevCount) => prevCount + 1);
+
+      // i need to rerender the cards
+      setCards((prevCards) =>
+        prevCards.map((card) => {
+          return card;
+        }),
+      );
+
       return;
     }
 
@@ -87,7 +99,6 @@ function CardProvider(props: { children: React.ReactNode }) {
         if (card.id === selectedCardOneId || card.id === selectedCardTwoId) {
           return {
             ...card,
-            selected: true,
             answered: true,
           };
         }
@@ -102,25 +113,22 @@ function CardProvider(props: { children: React.ReactNode }) {
     setSelectedCardTwoId(null);
   }, [cards, isInitiallyMounted, selectedCardOneId, selectedCardTwoId]);
 
-  React.useEffect(() => {
-    console.log('Selected Card One Id', selectedCardOneId);
-    console.log('Selected Card Two Id', selectedCardTwoId);
-  }, [selectedCardOneId, selectedCardTwoId]);
+  // React.useEffect(() => {
+  //   console.log('Selected Card One Id', selectedCardOneId);
+  //   console.log('Selected Card Two Id', selectedCardTwoId);
+  // }, [selectedCardOneId, selectedCardTwoId]);
 
   return (
     <cardContext.Provider
       value={{
         cards,
-        setCards,
         turns,
-        setTurns,
         matches,
-        setMatches,
+        restart,
         selectedCardOneId,
         selectedCardTwoId,
         handleCardSelect,
         isInitiallyMounted,
-        setIsInitiallyMounted,
       }}
     >
       {props.children}
@@ -128,7 +136,7 @@ function CardProvider(props: { children: React.ReactNode }) {
   );
 }
 
-const useCardContext = () => {
+const useCards = () => {
   const context = React.useContext(cardContext);
 
   if (context === undefined) {
@@ -137,4 +145,4 @@ const useCardContext = () => {
   return context;
 };
 
-export { CardProvider, useCardContext };
+export { CardProvider, useCards as useCardContext };
