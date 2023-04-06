@@ -11,7 +11,7 @@ import { useCardContext } from '~/src/context/CardContext';
 import { ICard } from '~/src/data/animals';
 
 function Animals() {
-  const { cards, matches, turns, restart } = useCardContext();
+  const { cards, matches, turns, restart, isAnimating } = useCardContext();
 
   return (
     <div
@@ -35,8 +35,18 @@ function Animals() {
         className="container"
         style={{
           flex: 1,
+          position: 'relative',
         }}
       >
+        <div
+          style={{
+            position: 'absolute',
+            inset: '0',
+            zIndex: 1,
+            backgroundColor: 'rgba(255, 0, 0, 50%)',
+            display: 'none',
+          }}
+        ></div>
         <div
           className="card-container"
           style={{
@@ -84,7 +94,8 @@ function CardComponent({ card }: CardProps) {
   const [isInitialAnimationFinished, setIsInitialAnimationFinished] = React.useState(false);
   const [isReverseAnimationFinished, setIsReverseAnimationFinished] = React.useState(false);
 
-  const { isInitiallyMounted, selectedCardOneId, selectedCardTwoId, handleCardSelect } = useCardContext();
+  const { isInitiallyMounted, selectedCardOneId, setIsAnimating, selectedCardTwoId, handleCardSelect, forceRerender } =
+    useCardContext();
 
   const isSelectedById = React.useMemo(() => {
     return selectedCardOneId === card.id || selectedCardTwoId === card.id;
@@ -97,18 +108,22 @@ function CardComponent({ card }: CardProps) {
   }, [isReverseAnimationFinished]);
 
   React.useEffect(() => {
+    let timeout: any;
     if (!isReverseAnimationFinished) return;
-
-    console.log('Rendering inside ~ line 112 of ~/src/app/animals/page.tsx');
 
     if (card.answered) {
       setIsCardShowing(true);
       setPreventPointerEvent(true);
     } else {
-      setIsCardShowing(false);
-      setPreventPointerEvent(false);
+      timeout = setTimeout(() => {
+        setIsCardShowing(false);
+        setPreventPointerEvent(false);
+      }, 2000);
     }
-  }, [card, isReverseAnimationFinished]);
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [card.answered, isReverseAnimationFinished, forceRerender]);
 
   React.useEffect(() => {
     if (!isInitiallyMounted) {
@@ -186,6 +201,7 @@ function CardComponent({ card }: CardProps) {
           }}
           transition={transition}
           onAnimationComplete={(state) => {
+            // setIsAnimating(false);
             if (!isInitialAnimationFinished || state !== 'visible') {
               return;
             }
@@ -194,6 +210,9 @@ function CardComponent({ card }: CardProps) {
               setIsReverseAnimationFinished(true);
             }
           }}
+          // onAnimationStart={() => {
+          // setIsAnimating(true);
+          // }}
         />
         <motion.img
           key="back"
@@ -208,7 +227,7 @@ function CardComponent({ card }: CardProps) {
           animate={isCardShowing ? 'visible' : 'hidden'}
           exit={{ rotateY: -180, opacity: 0 }}
           style={{
-            aspectRatio: '1/1',
+            aspectRatio: '0.5',
             objectFit: 'cover',
             width: '100%',
             height: '100%',

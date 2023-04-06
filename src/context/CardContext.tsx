@@ -13,18 +13,23 @@ const cardContext = React.createContext<
       selectedCardTwoId: number | null;
       handleCardSelect: (cardId: number) => void;
       isInitiallyMounted: boolean;
+      forceRerender: boolean;
+      setIsAnimating: React.Dispatch<React.SetStateAction<boolean>>;
+      isAnimating: boolean;
       restart: () => void;
     }
   | undefined
 >(undefined);
 
 function CardProvider(props: { children: React.ReactNode }) {
+  const [isAnimating, setIsAnimating] = React.useState(false);
   const [isInitiallyMounted, setIsInitiallyMounted] = React.useState(false);
   const [cards, setCards] = React.useState<ICard[]>([]);
   const [turns, setTurns] = React.useState(0);
   const [matches, setMatches] = React.useState(0);
   const [selectedCardOneId, setSelectedCardOneId] = React.useState<number | null>(null);
   const [selectedCardTwoId, setSelectedCardTwoId] = React.useState<number | null>(null);
+  const [forceRerender, setForceRerender] = React.useState(false);
 
   const handleCardSelect = React.useCallback(
     (cardId: number) => {
@@ -58,6 +63,8 @@ function CardProvider(props: { children: React.ReactNode }) {
       return;
     }
 
+    console.log('Rendered in CardContext file UseEffect');
+
     const isGameCompleted = cards.every((card) => card.answered);
 
     if (isGameCompleted) {
@@ -82,14 +89,7 @@ function CardProvider(props: { children: React.ReactNode }) {
       setSelectedCardOneId(null);
       setSelectedCardTwoId(null);
       setTurns((prevCount) => prevCount + 1);
-
-      // i need to rerender the cards
-      setCards((prevCards) =>
-        prevCards.map((card) => {
-          return card;
-        }),
-      );
-
+      setForceRerender((prevForceRerender) => !prevForceRerender);
       return;
     }
 
@@ -128,7 +128,10 @@ function CardProvider(props: { children: React.ReactNode }) {
         selectedCardOneId,
         selectedCardTwoId,
         handleCardSelect,
+        isAnimating,
+        setIsAnimating,
         isInitiallyMounted,
+        forceRerender,
       }}
     >
       {props.children}
