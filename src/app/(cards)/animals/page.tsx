@@ -44,7 +44,7 @@ function Animals() {
             inset: '0',
             zIndex: 1,
             backgroundColor: 'rgba(255, 0, 0, 50%)',
-            display: 'none',
+            display: isAnimating ? 'block' : 'none',
           }}
         ></div>
         <div
@@ -101,7 +101,7 @@ function CardComponent({ card }: CardProps) {
     selectedCardTwoId,
     handleCardSelect,
     forceRerender,
-    nameThisLater,
+    initialRenderCount,
   } = useCardContext();
 
   const isSelectedById = React.useMemo(() => {
@@ -118,14 +118,8 @@ function CardComponent({ card }: CardProps) {
     let timeout: any;
     if (!isReverseAnimationFinished) return;
 
-    // console.log({
-    //   answered: card.answered,
-    //   isReverseAnimationFinished,
-    //   forceRerender,
-    // });
-
-    if (nameThisLater.current < 16) {
-      ++nameThisLater.current;
+    if (initialRenderCount.current < 16) {
+      ++initialRenderCount.current;
       return;
     }
 
@@ -135,7 +129,7 @@ function CardComponent({ card }: CardProps) {
       setPreventPointerEvent(true);
     }
     // run when it's not a match
-    else if (!selectedCardOneId && !selectedCardTwoId) {
+    else {
       timeout = setTimeout(() => {
         setIsCardShowing(false);
         setPreventPointerEvent(false);
@@ -145,7 +139,7 @@ function CardComponent({ card }: CardProps) {
     return () => {
       clearTimeout(timeout);
     };
-  }, [card.answered, isReverseAnimationFinished, forceRerender, selectedCardOneId, selectedCardTwoId]);
+  }, [card.answered, isReverseAnimationFinished, forceRerender, initialRenderCount]);
 
   React.useEffect(() => {
     if (!isInitiallyMounted) {
@@ -218,7 +212,7 @@ function CardComponent({ card }: CardProps) {
           }}
           transition={transition}
           onAnimationComplete={(state) => {
-            // setIsAnimating(false);
+            setIsAnimating(false);
             if (!isInitialAnimationFinished || state !== 'visible') {
               return;
             }
@@ -227,9 +221,9 @@ function CardComponent({ card }: CardProps) {
               setIsReverseAnimationFinished(true);
             }
           }}
-          // onAnimationStart={() => {
-          // setIsAnimating(true);
-          // }}
+          onAnimationStart={() => {
+            setIsAnimating(true);
+          }}
         />
         <motion.img
           key="back"

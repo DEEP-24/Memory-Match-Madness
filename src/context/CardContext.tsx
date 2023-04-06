@@ -16,7 +16,7 @@ const cardContext = React.createContext<
       forceRerender: boolean;
       setIsAnimating: React.Dispatch<React.SetStateAction<boolean>>;
       isAnimating: boolean;
-      nameThisLater: React.MutableRefObject<number>;
+      initialRenderCount: React.MutableRefObject<number>;
       restart: () => void;
     }
   | undefined
@@ -31,7 +31,7 @@ function CardProvider(props: { children: React.ReactNode }) {
   const [selectedCardOneId, setSelectedCardOneId] = React.useState<number | null>(null);
   const [selectedCardTwoId, setSelectedCardTwoId] = React.useState<number | null>(null);
   const [forceRerender, setForceRerender] = React.useState(false);
-  const nameThisLater = React.useRef(0);
+  const initialRenderCount = React.useRef(0);
 
   const handleCardSelect = React.useCallback(
     (cardId: number) => {
@@ -134,7 +134,7 @@ function CardProvider(props: { children: React.ReactNode }) {
         setIsAnimating,
         isInitiallyMounted,
         forceRerender,
-        nameThisLater,
+        initialRenderCount,
       }}
     >
       {props.children}
