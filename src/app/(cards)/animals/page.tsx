@@ -94,8 +94,15 @@ function CardComponent({ card }: CardProps) {
   const [isInitialAnimationFinished, setIsInitialAnimationFinished] = React.useState(false);
   const [isReverseAnimationFinished, setIsReverseAnimationFinished] = React.useState(false);
 
-  const { isInitiallyMounted, selectedCardOneId, setIsAnimating, selectedCardTwoId, handleCardSelect, forceRerender } =
-    useCardContext();
+  const {
+    isInitiallyMounted,
+    selectedCardOneId,
+    setIsAnimating,
+    selectedCardTwoId,
+    handleCardSelect,
+    forceRerender,
+    nameThisLater,
+  } = useCardContext();
 
   const isSelectedById = React.useMemo(() => {
     return selectedCardOneId === card.id || selectedCardTwoId === card.id;
@@ -111,19 +118,34 @@ function CardComponent({ card }: CardProps) {
     let timeout: any;
     if (!isReverseAnimationFinished) return;
 
+    // console.log({
+    //   answered: card.answered,
+    //   isReverseAnimationFinished,
+    //   forceRerender,
+    // });
+
+    if (nameThisLater.current < 16) {
+      ++nameThisLater.current;
+      return;
+    }
+
+    // run when it's match
     if (card.answered) {
       setIsCardShowing(true);
       setPreventPointerEvent(true);
-    } else {
+    }
+    // run when it's not a match
+    else if (!selectedCardOneId && !selectedCardTwoId) {
       timeout = setTimeout(() => {
         setIsCardShowing(false);
         setPreventPointerEvent(false);
       }, 2000);
     }
+
     return () => {
       clearTimeout(timeout);
     };
-  }, [card.answered, isReverseAnimationFinished, forceRerender]);
+  }, [card.answered, isReverseAnimationFinished, forceRerender, selectedCardOneId, selectedCardTwoId]);
 
   React.useEffect(() => {
     if (!isInitiallyMounted) {
@@ -135,6 +157,8 @@ function CardComponent({ card }: CardProps) {
 
       setTimeout(() => {
         setIsCardShowing(false);
+        console.log('Timeout ~ first stagger false');
+
         setIsInitialAnimationFinished(true);
       }, 2000);
     }, 3000);
@@ -147,18 +171,11 @@ function CardComponent({ card }: CardProps) {
   return (
     <motion.button
       onClick={() => {
-        setIsCardShowing((prevState) => {
-          if (isReverseAnimationFinished && prevState) {
-            handleCardSelect(card.id);
-          }
-
-          return !prevState;
-        });
-
-        handleCardSelect(card.id);
-        if (!isCardShowing) {
+        if (isReverseAnimationFinished && isCardShowing === false) {
           handleCardSelect(card.id);
         }
+
+        setIsCardShowing((prevState) => !prevState);
       }}
       className={classNames('card')}
       key={card.id}
