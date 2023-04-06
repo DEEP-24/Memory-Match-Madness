@@ -3,6 +3,7 @@
 import { randomizeCards } from '~/src/utils/functions';
 import * as React from 'react';
 import { ANIMAL_CARDS, ICard } from '~/src/data/animals';
+import { toast } from 'react-hot-toast';
 
 const cardContext = React.createContext<
   | {
@@ -65,8 +66,6 @@ function CardProvider(props: { children: React.ReactNode }) {
       return;
     }
 
-    console.log('Rendered in CardContext ~ ', selectedCardOneId);
-
     const isGameCompleted = cards.every((card) => card.answered);
 
     if (isGameCompleted) {
@@ -92,10 +91,12 @@ function CardProvider(props: { children: React.ReactNode }) {
       setSelectedCardTwoId(null);
       setTurns((prevCount) => prevCount + 1);
       setForceRerender((prevForceRerender) => !prevForceRerender);
+      setTimeout(() => {
+        toast.error('Not matched!');
+      }, 1500);
       return;
     }
 
-    console.log('match');
     setCards((prevCards) =>
       prevCards.map((card) => {
         if (card.id === selectedCardOneId || card.id === selectedCardTwoId) {
@@ -113,6 +114,9 @@ function CardProvider(props: { children: React.ReactNode }) {
     setMatches((prev) => prev + 1);
     setSelectedCardOneId(null);
     setSelectedCardTwoId(null);
+    setTimeout(() => {
+      toast.success('Matched!');
+    }, 1500);
   }, [cards, isInitiallyMounted, selectedCardOneId, selectedCardTwoId]);
 
   // React.useEffect(() => {

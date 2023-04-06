@@ -9,7 +9,7 @@ import Link from 'next/link';
 import * as React from 'react';
 import { useCardContext } from '~/src/context/CardContext';
 import { ICard } from '~/src/data/animals';
-
+import { toast } from 'react-hot-toast';
 function Animals() {
   const { cards, matches, turns, restart, isAnimating } = useCardContext();
 
@@ -43,9 +43,10 @@ function Animals() {
             position: 'absolute',
             inset: '0',
             zIndex: 1,
-            backgroundColor: 'rgba(255, 0, 0, 50%)',
+            backgroundColor: 'transparent',
             display: isAnimating ? 'block' : 'none',
           }}
+          onClick={() => toast.error('Have some patience, you piece of shit!')}
         ></div>
         <div
           className="card-container"
@@ -256,10 +257,7 @@ function CardComponent({ card }: CardProps) {
             gap: '10px',
             backgroundColor: 'white',
           }}
-        >
-          <span>Sel: {isCardShowing.toString()}</span>
-          <span>Ans: {card.answered.toString()}</span>
-        </div>
+        ></div>
       </AnimatePresence>
     </motion.button>
   );
