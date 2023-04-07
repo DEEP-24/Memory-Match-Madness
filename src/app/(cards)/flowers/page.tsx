@@ -10,17 +10,14 @@ import * as React from 'react';
 import { useCardContext } from '~/src/context/CardContext';
 import { ICard } from '~/src/data/animals';
 import { toast } from 'react-hot-toast';
-import { usePathname } from 'next/navigation';
 import { GameHeader } from '~/src/components/GameHeader';
 
 function Animals() {
   const { cards, matches, turns, restart, isAnimating } = useCardContext();
-  const pathname = usePathname();
 
   return (
     <div className="h-full w-full flex flex-col relative">
       <GameHeader matches={matches} turns={turns} />
-
       <div className="flex-1 relative">
         <div
           style={{

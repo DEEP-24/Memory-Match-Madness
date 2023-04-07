@@ -8,7 +8,7 @@ export interface ICard {
   answered: boolean;
 }
 
-export const ANIMAL_CARDS: ICard[] = [
+export const FLOWER_CARDS: ICard[] = [
   {
     id: 1,
     renderId: 1,

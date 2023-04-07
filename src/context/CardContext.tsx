@@ -1,8 +1,12 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
-
+import { usePathname } from 'next/navigation';
 import { randomizeCards } from '~/src/utils/functions';
 import * as React from 'react';
 import { ANIMAL_CARDS, ICard } from '~/src/data/animals';
+import { FLOWER_CARDS } from '~/src/data/flowers';
+import { FRUIT_CARDS } from '~/src/data/fruits';
+import { SPORT_CARDS } from '~/src/data/sports';
 import { toast } from 'react-hot-toast';
 
 const cardContext = React.createContext<
@@ -34,6 +38,8 @@ function CardProvider(props: { children: React.ReactNode }) {
   const [forceRerender, setForceRerender] = React.useState(false);
   const initialRenderCount = React.useRef(0);
 
+  const pathname = usePathname();
+
   const handleCardSelect = React.useCallback(
     (cardId: number) => {
       if (selectedCardOneId === null) {
@@ -46,16 +52,39 @@ function CardProvider(props: { children: React.ReactNode }) {
     [selectedCardOneId],
   );
 
+  let selectedCards: ICard[];
+
+  React.useEffect(() => {
+    const currentRoute = pathname;
+    console.log(currentRoute);
+
+    switch (currentRoute) {
+      case '/animals':
+        selectedCards = ANIMAL_CARDS;
+        break;
+      case '/flowers':
+        selectedCards = FLOWER_CARDS;
+        break;
+      case '/fruits':
+        selectedCards = FRUIT_CARDS;
+        break;
+      case '/sports':
+        selectedCards = SPORT_CARDS;
+        break;
+      default:
+        selectedCards = ANIMAL_CARDS;
+        break;
+    }
+
+    setCards(randomizeCards(selectedCards));
+  }, [pathname]);
+
   const restart = () => {
     setTurns(0);
     setMatches(0);
 
-    randomizeCards(ANIMAL_CARDS);
+    setCards(randomizeCards(selectedCards));
   };
-
-  React.useEffect(() => {
-    setCards(randomizeCards(ANIMAL_CARDS));
-  }, []);
 
   React.useEffect(() => {
     setIsInitiallyMounted(true);
