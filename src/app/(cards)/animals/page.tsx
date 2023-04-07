@@ -21,23 +21,17 @@ function Animals() {
         flexDirection: 'column',
       }}
     >
-      <div className="Matches_Turns">
-        <div className="Matches">
+      <div className="flex justify-between p-2">
+        <div className="p-2 border-2 border-white ">
           <h3>Matches</h3>
           <p>{matches}</p>
         </div>
-        <div className="Turns">
+        <div className="p-2 border-2 border-white ">
           <h3>Turns</h3>
           <p>{turns}</p>
         </div>
       </div>
-      <div
-        className="container"
-        style={{
-          flex: 1,
-          position: 'relative',
-        }}
-      >
+      <div>
         <div
           style={{
             position: 'absolute',
@@ -46,10 +40,10 @@ function Animals() {
             backgroundColor: 'transparent',
             display: isAnimating ? 'block' : 'none',
           }}
-          onClick={() => toast.error('Have some patience, you piece of shit!')}
+          onClick={() => toast.error('Have some patience!')}
         ></div>
         <div
-          className="card-container"
+          className="card-container grid grid-cols-4 gap-4  p-2 place-content-center place-items-center"
           style={{
             height: '100%',
             padding: '10px',
@@ -60,7 +54,7 @@ function Animals() {
           ))}
         </div>
       </div>
-      <div className="Menu_Restart">
+      <div className="flex justify-between p-4">
         <div className="Menu">
           <Link href="/">
             <ArrowLeftIcon />

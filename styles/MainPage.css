@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Alkatra:wght@700&family=Edu+NSW+ACT+Foundation:wght@700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Alkatra:wght@700&family=Edu+NSW+ACT+Foundation:wght@700&display=swap');
 
 * {
   padding: 0px;
@@ -6,11 +6,10 @@
 }
 
 body {
-  background: url("/assets/background.webp");
+  background: url('/assets/background.webp');
 }
 
 .Logo {
-  font-family: "Alkatra", cursive;
   font-size: 100px;
   display: flex;
   justify-content: center;
@@ -32,5 +31,5 @@ body {
 }
 .categories span {
   font-size: 80px;
-  font-family: "Edu NSW ACT Foundation", cursive;
+  font-family: 'Edu NSW ACT Foundation', cursive;
 }
