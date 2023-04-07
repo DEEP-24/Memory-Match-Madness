@@ -1,7 +1,4 @@
 /* eslint-disable @next/next/no-img-element */
-import Link from 'next/link';
-import '~/styles/MainPage.css';
-import '~/styles/globals.css';
 
 export default function Home() {
   return (

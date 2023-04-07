@@ -1,7 +1,5 @@
 'use client';
 
-import '~/styles/animals.css';
-
 import { ArrowLeftIcon, ArrowPathIcon } from '@heroicons/react/20/solid';
 import classNames from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -12,15 +10,16 @@ import { ICard } from '~/src/data/animals';
 import { toast } from 'react-hot-toast';
 import { usePathname } from 'next/navigation';
 import { GameHeader } from '~/src/components/GameHeader';
+import DialogDemo from '~/src/components/DailogDemo';
 
 function Animals() {
   const { cards, matches, turns, restart, isAnimating } = useCardContext();
   const pathname = usePathname();
 
+
   return (
     <div className="h-full w-full flex flex-col relative">
       <GameHeader matches={matches} turns={turns} />
-
       <div className="flex-1 relative">
         <div
           style={{

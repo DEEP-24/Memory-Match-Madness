@@ -1,7 +1,5 @@
 'use client';
 
-import '~/styles/animals.css';
-
 import { ArrowLeftIcon, ArrowPathIcon } from '@heroicons/react/20/solid';
 import classNames from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
