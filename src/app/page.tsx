@@ -6,10 +6,7 @@ import '~/styles/globals.css';
 export default function Home() {
   return (
     <div className="h-full flex items-center justify-center relative">
-      <div className="absolute inset-0">
-        <img className="w-full h-full object-cover" src="/assets/background.webp" alt="background-image" />
-        <div className="absolute inset-0 bg-black/90"></div>
-      </div>
+      
       <div className="relative flex flex-col items-center gap-12">
         <div className="space-y-6">
           <h1 className="text-center text-6xl">Memory Match Madness</h1>

@@ -14,24 +14,18 @@ function Animals() {
   const { cards, matches, turns, restart, isAnimating } = useCardContext();
 
   return (
-    <div
-      style={{
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      <div className="flex justify-between p-2">
-        <div className="p-2 border-2 border-white ">
-          <h3>Matches</h3>
+    <div className="h-full w-full flex flex-col relative">
+      <div className="flex  flex-row justify-between p-2 ">
+        <div className="text-white bg-blue-600 rounded-b-md flex flex-col shadow ml-2 px-6 py-2 items-center justify-center -mt-2">
+          <h3 className="uppercase font-bold text-sm">Matches</h3>
           <p>{matches}</p>
         </div>
-        <div className="p-2 border-2 border-white ">
-          <h3>Turns</h3>
+        <div className="text-white bg-blue-600 rounded-b-md flex flex-col shadow mr-2 px-6 py-2 items-center justify-center -mt-2">
+          <h3 className="uppercase font-bold text-sm">Turns</h3>
           <p>{turns}</p>
         </div>
       </div>
-      <div>
+      <div className="flex-1 relative">
         <div
           style={{
             position: 'absolute',
@@ -42,31 +36,26 @@ function Animals() {
           }}
           onClick={() => toast.error('Have some patience!')}
         ></div>
-        <div
-          className="card-container grid grid-cols-4 gap-4  p-2 place-content-center place-items-center"
-          style={{
-            height: '100%',
-            padding: '10px',
-          }}
-        >
+        <div className="card-container h-full w-full flex-1 grid grid-cols-6 gap-8 p-2 place-content-center place-items-center">
           {cards.map((card) => (
             <CardComponent key={card.renderId} card={card} />
           ))}
         </div>
       </div>
-      <div className="flex justify-between p-4">
-        <div className="Menu">
-          <Link href="/">
-            <ArrowLeftIcon />
-            <span>Go Back</span>
-          </Link>
-        </div>
-        <div className="Restart">
-          <button onClick={() => restart()}>
-            <ArrowPathIcon />
-            <span>Restart</span>
-          </button>
-        </div>
+      <div className="flex justify-between p-2">
+        <Link
+          href="/"
+          className="text-white bg-blue-600 rounded-t-md flex flex-col shadow ml-2 px-6 py-4 items-center justify-center -mb-2"
+        >
+          <ArrowLeftIcon className="h-7 w-7" />
+        </Link>
+
+        <button
+          className="text-white bg-blue-600 rounded-t-md flex flex-col shadow mr-2 px-6 py-4 items-center justify-center -mb-2"
+          onClick={() => restart()}
+        >
+          <ArrowPathIcon className="h-7 w-7" />
+        </button>
       </div>
     </div>
   );
@@ -113,7 +102,7 @@ function CardComponent({ card }: CardProps) {
     let timeout: any;
     if (!isReverseAnimationFinished) return;
 
-    if (initialRenderCount.current < 16) {
+    if (initialRenderCount.current < 12) {
       ++initialRenderCount.current;
       return;
     }
@@ -149,7 +138,7 @@ function CardComponent({ card }: CardProps) {
         console.log('Timeout ~ first stagger false');
 
         setIsInitialAnimationFinished(true);
-      }, 2000);
+      }, 3500);
     }, 3000);
 
     return () => {
@@ -170,8 +159,9 @@ function CardComponent({ card }: CardProps) {
       key={card.id}
       style={{
         perspective: '1000px',
-        height: '145px',
-        width: '170px',
+        aspectRatio: '1/1.43',
+        // height: '145px',
+        width: '150px',
         position: 'relative',
         borderRadius: '10px',
         pointerEvents: preventPointerEvent || !isReverseAnimationFinished || isSelectedById ? 'none' : 'auto',
@@ -195,14 +185,12 @@ function CardComponent({ card }: CardProps) {
           animate={isCardShowing ? 'hidden' : 'visible'}
           exit={{ rotateY: 180, opacity: 0 }}
           style={{
-            aspectRatio: '1/1',
             objectFit: 'cover',
             position: 'absolute',
             width: '100%',
             height: '100%',
             borderRadius: '10px',
             backfaceVisibility: 'hidden',
-            border: '4px solid red',
             userSelect: 'none',
           }}
           transition={transition}
@@ -233,13 +221,12 @@ function CardComponent({ card }: CardProps) {
           animate={isCardShowing ? 'visible' : 'hidden'}
           exit={{ rotateY: -180, opacity: 0 }}
           style={{
-            aspectRatio: '0.5',
+            aspectRatio: '1/2',
             objectFit: 'cover',
             width: '100%',
             height: '100%',
             borderRadius: '10px',
             backfaceVisibility: 'hidden',
-            border: '4px solid red',
             userSelect: 'none',
           }}
           transition={transition}
