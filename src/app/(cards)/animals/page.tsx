@@ -13,7 +13,6 @@ import { ICard } from '~/src/data/animals';
 
 function Animals() {
   const { cards, matches, turns, restart, isAnimating } = useCardContext();
-  const pathname = usePathname();
 
   return (
     <div className="h-full w-full flex flex-col relative">
@@ -29,6 +28,7 @@ function Animals() {
           }}
           onClick={() => toast.error('Have some patience!')}
         ></div>
+
         <div className="card-container h-full w-full flex-1 grid grid-cols-6 gap-8 p-2 place-content-center place-items-center">
           {cards.map((card) => (
             <CardComponent key={card.renderId} card={card} />

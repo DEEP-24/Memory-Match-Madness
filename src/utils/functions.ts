@@ -10,8 +10,8 @@ export function randomizeCards(array: ICard[]) {
 }
 
 export const pathnameLookup = {
-  '/animals': 'Find matching Animals',
-  '/flowers': 'Find matching Flowers',
-  '/fruits': 'Find matching Fruits',
-  '/sports': 'Find matching Sports',
+  '/animals': 'Animals',
+  '/flowers': 'Flowers',
+  '/fruits': 'Fruits',
+  '/sports': 'Sports',
 };

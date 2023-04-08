@@ -4,9 +4,7 @@ import { Toaster } from 'react-hot-toast';
 export const ToastProvider = () => {
   return (
     <div>
-      <Toaster position="top-center" reverseOrder={false} toastOptions={{
-      
-      }} />
+      <Toaster position="bottom-center" reverseOrder={false} toastOptions={{}} />
     </div>
   );
 };

@@ -8,6 +8,10 @@ import { FLOWER_CARDS } from '~/src/data/flowers';
 import { FRUIT_CARDS } from '~/src/data/fruits';
 import { SPORT_CARDS } from '~/src/data/sports';
 import { toast } from 'react-hot-toast';
+import { Dialog } from '~/src/components/Dialog';
+import Link from 'next/link';
+import { ArrowLeftIcon, ArrowRightIcon } from '@radix-ui/react-icons';
+import { ArrowPathIcon } from '@heroicons/react/20/solid';
 
 const cardContext = React.createContext<
   | {
@@ -36,6 +40,9 @@ function CardProvider(props: { children: React.ReactNode }) {
   const [selectedCardOneId, setSelectedCardOneId] = React.useState<number | null>(null);
   const [selectedCardTwoId, setSelectedCardTwoId] = React.useState<number | null>(null);
   const [forceRerender, setForceRerender] = React.useState(false);
+
+  const [open, setOpen] = React.useState(false);
+
   const initialRenderCount = React.useRef(0);
 
   const pathname = usePathname();
@@ -52,13 +59,10 @@ function CardProvider(props: { children: React.ReactNode }) {
     [selectedCardOneId],
   );
 
-  let selectedCards: ICard[];
-
   React.useEffect(() => {
-    const currentRoute = pathname;
-    console.log(currentRoute);
+    let selectedCards: ICard[];
 
-    switch (currentRoute) {
+    switch (pathname) {
       case '/animals':
         selectedCards = ANIMAL_CARDS;
         break;
@@ -79,12 +83,7 @@ function CardProvider(props: { children: React.ReactNode }) {
     setCards(randomizeCards(selectedCards));
   }, [pathname]);
 
-  const restart = () => {
-    setTurns(0);
-    setMatches(0);
-
-    setCards(randomizeCards(selectedCards));
-  };
+  const restart = () => window.globalThis.location.reload();
 
   React.useEffect(() => {
     setIsInitiallyMounted(true);
@@ -98,7 +97,9 @@ function CardProvider(props: { children: React.ReactNode }) {
     const isGameCompleted = cards.every((card) => card.answered);
 
     if (isGameCompleted) {
-      alert('Game Completed');
+      setTimeout(() => {
+        setOpen(true);
+      }, 2000);
       return;
     }
 
@@ -148,11 +149,6 @@ function CardProvider(props: { children: React.ReactNode }) {
     }, 1500);
   }, [cards, isInitiallyMounted, selectedCardOneId, selectedCardTwoId]);
 
-  // React.useEffect(() => {
-  //   console.log('Selected Card One Id', selectedCardOneId);
-  //   console.log('Selected Card Two Id', selectedCardTwoId);
-  // }, [selectedCardOneId, selectedCardTwoId]);
-
   return (
     <cardContext.Provider
       value={{
@@ -170,7 +166,37 @@ function CardProvider(props: { children: React.ReactNode }) {
         initialRenderCount,
       }}
     >
-      {props.children}
+      <>
+        {props.children}
+
+        <Dialog title="Game Over!" open={open} setOpen={setOpen}>
+          <div className="p-4">
+            <p className="text-mauve11 mt-[10px] mb-5 text-[15px] leading-normal">
+              The game is over. You have matched {matches} cards in {turns} turns.
+            </p>
+
+            <hr className="my-4" />
+
+            <div className="flex items-center justify-between">
+              <Link
+                href="/"
+                className="text-violet11 hover:bg-violet-200 flex items-center gap-2 text-sm justify-center rounded-sm bg-violet-100 px-3 py-1.5 transition-all"
+              >
+                <span>Back</span>
+                <ArrowLeftIcon className="h-4" />
+              </Link>
+
+              <button
+                onClick={restart}
+                className="text-violet11 hover:bg-violet-200 flex items-center gap-2 text-sm justify-center rounded-sm bg-violet-100 px-3 py-1.5 transition-all"
+              >
+                <span>Restart</span>
+                <ArrowPathIcon className="h-4" />
+              </button>
+            </div>
+          </div>
+        </Dialog>
+      </>
     </cardContext.Provider>
   );
 }
