@@ -85,10 +85,7 @@ export default function Home() {
             <li className="text-mauve11 mt-[10px] mb-5 text-[15px] leading-normal">
               The game is played with a set of cards that are displayed on the screen.
             </li>
-            <li className="text-mauve11 mt-[10px] mb-5 text-[15px] leading-normal">
-              Each card has a picture or symbol on one side. The symbols can be anything from the category you
-              choose.There are usually pairs of cards with matching symbols.
-            </li>
+
             <li className="text-mauve11 mt-[10px] mb-5 text-[15px] leading-normal">
               The goal of the game is to find all the matching pairs of cards.
             </li>
