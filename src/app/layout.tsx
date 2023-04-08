@@ -17,9 +17,9 @@ const specialFont = Roboto({
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className={`h-full ${specialFont.variable} font-header`}>
-      <body className="h-full relative">
+      <body className="h-full relative isolate">
         <div className="absolute inset-0">
-          <img className="w-full h-full object-cover" src="/assets/background.webp" alt="background-image" />
+          <img className="w-full h-full object-cover" src="/assets/background.png" alt="background-image" />
           <div className="absolute inset-0 bg-black/90"></div>
         </div>
         {children}
